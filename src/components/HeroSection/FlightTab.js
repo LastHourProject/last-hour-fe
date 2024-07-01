@@ -371,7 +371,7 @@ export const FlightTab = ({ isSearch }) => {
                     {!multiCity ? (
                       <div
                         className={classNames('relative p-4 w-full bg-white', {
-                          'bg-gray-300 cursor-default': tripType === 'oneway',
+                          'opacity-50 ': tripType === 'oneway',
                         })}
                         onClick={() => {
                           if (tripType === 'oneway') {
