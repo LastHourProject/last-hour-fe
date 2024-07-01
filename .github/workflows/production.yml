@@ -1,0 +1,34 @@
+name: Deploy Last Hour App
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: [self-hosted, main]
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Clean and install packages
+        run: |
+          rm -rf package-lock.json
+          rm -rf .next
+          npm install
+
+      - name: Build last hour app
+        run: npm run build
+
+      - name: Restart server
+        run: pm2 restart last-hour
