@@ -31,30 +31,32 @@ export const LoginModal = ({ openModal, closeModal }) => {
     handleSubmit,
     reset,
     formState: { errors },
-    setValue,
   } = useForm();
+
   const {
     register: emailRegister,
     handleSubmit: handleEmailRegister,
     reset: registerReset,
     formState: { errors: registerError },
   } = useForm();
+
   const {
     register: forgotRegister,
     handleSubmit: handleForgotOTP,
     reset: OTPReset,
     formState: { errors: errorsOTP },
   } = useForm();
+
   const {
     register: changeRegister,
     handleSubmit: handleChangeResetPassword,
     reset: resetPassword,
+    setValue,
     formState: { errors: errorsResetPassword },
     watch,
   } = useForm();
 
   const [showEmail, setShowEmail] = useState();
-  // eslint-disable-next-line no-unused-vars
   const [userEmail, setUserEmail] = useState('');
 
   const handleShowEmail = (type) => {
@@ -63,7 +65,7 @@ export const LoginModal = ({ openModal, closeModal }) => {
 
   const handleLogin = async (values) => {
     try {
-      const { data } = await API.post('/login', values);
+      const { data } = await API.post('/auth/login', values);
       localStorage.setItem(LOCALSTORAGE_AUTH_KEY, data?.token);
 
       dispatch(setUserDetails(data?.data?.user));
@@ -78,7 +80,7 @@ export const LoginModal = ({ openModal, closeModal }) => {
 
   const handleRegister = async (values) => {
     try {
-      const { data } = await API.post('/register', values);
+      const { data } = await API.post('/auth/register', values);
       localStorage.setItem(LOCALSTORAGE_AUTH_KEY, data?.data?.token);
 
       dispatch(setUserDetails(data?.data?.user));
@@ -93,8 +95,8 @@ export const LoginModal = ({ openModal, closeModal }) => {
 
   const handleForgetPassword = async (values) => {
     try {
-      const { data, status } = await API.post('/send-password-reset', values);
-      setUserEmail(data);
+      const { status } = await API.post('/auth/send-password-reset', values);
+      setUserEmail(values.email);
       reset();
       toaster.success('Send Email OTP');
       OTPReset();
@@ -110,7 +112,7 @@ export const LoginModal = ({ openModal, closeModal }) => {
 
   const handleConfirmPassword = async (values) => {
     try {
-      await API.post('/auth/reset-password', values);
+      await API.post('/auth/reset-password', { ...values, email: userEmail });
       toaster.success('Send Email code');
       resetPassword();
     } catch (error) {
@@ -291,6 +293,22 @@ export const LoginModal = ({ openModal, closeModal }) => {
                   }}
                   error={
                     registerError?.password && registerError.password?.message
+                  }
+                />
+              </div>
+              <div className='relative mb-4'>
+                <Input
+                  type='password'
+                  label='Password'
+                  register={emailRegister}
+                  placeholder='Password'
+                  name='password_confirmation'
+                  validationRules={{
+                    required: 'This field is required',
+                  }}
+                  error={
+                    registerError?.password_confirmation &&
+                    registerError.password_confirmation?.message
                   }
                 />
               </div>
