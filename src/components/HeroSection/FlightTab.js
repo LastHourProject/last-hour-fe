@@ -226,7 +226,7 @@ export const FlightTab = ({ isSearch }) => {
                     'grid-cols-5': !isSearch,
                     'grid-cols-6': isSearch,
                     'grid-cols-4': multiCity,
-                    'grid-cols-4': showLiveDateUI,
+                    '!grid-cols-4': showLiveDateUI,
                   },
                 )}
               >
